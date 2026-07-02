@@ -46,3 +46,20 @@ The database consists of the following foundational tables:
 1.  `/schema.sql`: Contains the core structural DDL scripts to instantiate the tables, primary keys, and constraint checks.
 2.  `/security-roles.sql`: Features the RBAC script configuring specific user roles, access limitations, and database views.
 3.  `/mock-data.sql`: Holds sanitized, non-sensitive sample datasets modeling realistic inventory flows and cash variance anomalies for testing.
+---
+
+## 🔍 Verification & Audit Results (Live Terminal Testing)
+
+To validate the security controls and auditing engine of this database, testing was performed inside a **Kali Linux** environment utilizing a local **MariaDB/MySQL** instance.
+
+### 1. Automated Fraud & Discrepancy Detection
+Executing a query against the saved audit view `v_fraud_and_variance_tracker` instantly filters out balanced business days and flags internal financial variances for manager investigation.
+
+![Live Terminal Filtering Anomaly Log](Discrepancy detection.png)
+
+### 2. Role-Based Access Control Enforced (Least Privilege Test)
+Impersonating the low-privileged floor staff account (`sales_clerk`) and attempting to access the financial verification ledger or audit views triggers an immediate engine-level denial—confirming data segregation works flawlessly.
+
+```text
+MariaDB [retail_security_db]> SELECT * FROM v_fraud_and_variance_tracker;
+ERROR 1142 (42000): SELECT command denied to user 'sales_clerk'@'localhost' for table 'retail_security_databes'. 'v_fraud_and_variance_tracker'
